@@ -1,0 +1,270 @@
+﻿namespace DuplicateFileFinder
+{
+    partial class Form1
+    {
+        /// <summary>
+        ///  Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.TextBox txtFolder;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.Button btnScan;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ListView lvFiles;
+        private System.Windows.Forms.Button btnRename;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnCleanupDuplicates;
+        private System.Windows.Forms.Button btnShowSimilar;
+        private System.Windows.Forms.TextBox txtPattern;
+        private System.Windows.Forms.Label lblPattern;
+        private System.Windows.Forms.CheckBox chkPreview;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ColumnHeader colSelect;
+        private System.Windows.Forms.ColumnHeader colName;
+        private System.Windows.Forms.ColumnHeader colPath;
+        private System.Windows.Forms.ColumnHeader colSize;
+        private System.Windows.Forms.ColumnHeader colHash;
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            txtFolder = new TextBox();
+            btnBrowse = new Button();
+            btnScan = new Button();
+            btnCancel = new Button();
+            lvFiles = new ListView();
+            colSelect = new ColumnHeader();
+            colName = new ColumnHeader();
+            colPath = new ColumnHeader();
+            colSize = new ColumnHeader();
+            colHash = new ColumnHeader();
+            btnRename = new Button();
+            btnDelete = new Button();
+            btnCleanupDuplicates = new Button();
+            btnShowSimilar = new Button();
+            txtPattern = new TextBox();
+            lblPattern = new Label();
+            chkPreview = new CheckBox();
+            progressBar = new ProgressBar();
+            lblStatus = new Label();
+            SuspendLayout();
+            // 
+            // txtFolder
+            // 
+            txtFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtFolder.Location = new Point(12, 12);
+            txtFolder.Name = "txtFolder";
+            txtFolder.Size = new Size(547, 31);
+            txtFolder.TabIndex = 0;
+            // 
+            // btnBrowse
+            // 
+            btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBrowse.Location = new Point(565, 11);
+            btnBrowse.Name = "btnBrowse";
+            btnBrowse.Size = new Size(97, 32);
+            btnBrowse.TabIndex = 1;
+            btnBrowse.Text = "Browse";
+            btnBrowse.UseVisualStyleBackColor = true;
+            btnBrowse.Click += btnBrowse_Click;
+            // 
+            // btnScan
+            // 
+            btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnScan.Location = new Point(668, 11);
+            btnScan.Name = "btnScan";
+            btnScan.Size = new Size(75, 32);
+            btnScan.TabIndex = 2;
+            btnScan.Text = "Scan";
+            btnScan.UseVisualStyleBackColor = true;
+            btnScan.Click += btnScan_Click;
+            // 
+            // btnCancel
+            // 
+            btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnCancel.Enabled = false;
+            btnCancel.Location = new Point(749, 11);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(75, 32);
+            btnCancel.TabIndex = 3;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click;
+            // 
+            // lvFiles
+            // 
+            lvFiles.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lvFiles.Columns.AddRange(new ColumnHeader[] { colSelect, colName, colPath, colSize, colHash });
+            lvFiles.FullRowSelect = true;
+            lvFiles.Location = new Point(12, 53);
+            lvFiles.Name = "lvFiles";
+            lvFiles.Size = new Size(818, 320);
+            lvFiles.TabIndex = 4;
+            lvFiles.UseCompatibleStateImageBehavior = false;
+            lvFiles.View = View.Details;
+            lvFiles.ItemChecked += lvFiles_ItemChecked;
+            // 
+            // colSelect
+            // 
+            colSelect.Text = "✓";
+            colSelect.Width = 35;
+            // 
+            // colName
+            // 
+            colName.Text = "Name";
+            colName.Width = 150;
+            // 
+            // colPath
+            // 
+            colPath.Text = "Path";
+            colPath.Width = 350;
+            // 
+            // colSize
+            // 
+            colSize.Text = "Size";
+            colSize.Width = 80;
+            // 
+            // colHash
+            // 
+            colHash.Text = "Hash";
+            colHash.Width = 150;
+            // 
+            // btnRename
+            // 
+            btnRename.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnRename.Location = new Point(716, 496);
+            btnRename.Name = "btnRename";
+            btnRename.Size = new Size(91, 38);
+            btnRename.TabIndex = 5;
+            btnRename.Text = "Rename";
+            btnRename.UseVisualStyleBackColor = true;
+            btnRename.Click += btnRename_Click;
+            // 
+            // btnDelete
+            // 
+            btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDelete.Location = new Point(628, 496);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(83, 38);
+            btnDelete.TabIndex = 11;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
+            // 
+            // btnCleanupDuplicates
+            // 
+            btnCleanupDuplicates.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnCleanupDuplicates.Location = new Point(12, 496);
+            btnCleanupDuplicates.Name = "btnCleanupDuplicates";
+            btnCleanupDuplicates.Size = new Size(135, 38);
+            btnCleanupDuplicates.TabIndex = 12;
+            btnCleanupDuplicates.Text = "Cleanup All";
+            btnCleanupDuplicates.UseVisualStyleBackColor = true;
+            btnCleanupDuplicates.Click += btnCleanupDuplicates_Click;
+            // 
+            // btnShowSimilar
+            // 
+            btnShowSimilar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnShowSimilar.Location = new Point(153, 496);
+            btnShowSimilar.Name = "btnShowSimilar";
+            btnShowSimilar.Size = new Size(135, 38);
+            btnShowSimilar.TabIndex = 13;
+            btnShowSimilar.Text = "Show Similar";
+            btnShowSimilar.UseVisualStyleBackColor = true;
+            btnShowSimilar.Click += btnShowSimilar_Click;
+            // 
+            // txtPattern
+            // 
+            txtPattern.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            txtPattern.Location = new Point(86, 407);
+            txtPattern.Name = "txtPattern";
+            txtPattern.Size = new Size(465, 31);
+            txtPattern.TabIndex = 6;
+            txtPattern.Text = "{name}_dup{n}";
+            // 
+            // lblPattern
+            // 
+            lblPattern.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            lblPattern.AutoSize = true;
+            lblPattern.Location = new Point(12, 410);
+            lblPattern.Name = "lblPattern";
+            lblPattern.Size = new Size(137, 25);
+            lblPattern.TabIndex = 7;
+            lblPattern.Text = "Rename pattern";
+            // 
+            // chkPreview
+            // 
+            chkPreview.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            chkPreview.AutoSize = true;
+            chkPreview.Location = new Point(557, 410);
+            chkPreview.Name = "chkPreview";
+            chkPreview.Size = new Size(98, 29);
+            chkPreview.TabIndex = 8;
+            chkPreview.Text = "Preview";
+            chkPreview.UseVisualStyleBackColor = true;
+            // 
+            // progressBar
+            // 
+            progressBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            progressBar.Location = new Point(12, 377);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(818, 23);
+            progressBar.TabIndex = 9;
+            // 
+            // lblStatus
+            // 
+            lblStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            lblStatus.AutoSize = true;
+            lblStatus.Location = new Point(12, 354);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(60, 25);
+            lblStatus.TabIndex = 10;
+            lblStatus.Text = "Ready";
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(842, 549);
+            Controls.Add(btnShowSimilar);
+            Controls.Add(btnCleanupDuplicates);
+            Controls.Add(btnDelete);
+            Controls.Add(lblStatus);
+            Controls.Add(progressBar);
+            Controls.Add(chkPreview);
+            Controls.Add(lblPattern);
+            Controls.Add(txtPattern);
+            Controls.Add(btnRename);
+            Controls.Add(lvFiles);
+            Controls.Add(btnCancel);
+            Controls.Add(btnScan);
+            Controls.Add(btnBrowse);
+            Controls.Add(txtFolder);
+            Name = "Form1";
+            Text = "Duplicate File Finder";
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+    }
+}
