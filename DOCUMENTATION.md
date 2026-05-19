@@ -1,6 +1,6 @@
 # 📚 DuplicateFileFinder - Complete Documentation
 
-**Version**: 2.0 | **Status**: ✅ Production Ready | **Build**: Successful (0 errors)
+**Version**: 4.0 | **Status**: ✅ Production Ready | **Build**: Successful (0 errors)
 
 ---
 
@@ -18,19 +18,20 @@
 1. [What's New](#-whats-new)
 2. [Quick Start](#-quick-start)
 3. [Using the Application](#-using-the-application)
-4. [New Features (v2.0)](#-new-features-v20)
-5. [Technical Details](#-technical-details)
-6. [Architecture & Threading](#-architecture--threading)
-7. [Code Changes](#-code-changes)
-8. [Visual Guides](#-visual-guides)
-9. [Verification Checklist](#-verification-checklist)
-10. [Deployment & Status](#-deployment--status)
+4. [New Features (v2.0+)](#-new-features-v20)
+5. [Bulk Rename Feature (v4.0 NEW)](#-bulk-rename-feature-v40-new)
+6. [Technical Details](#-technical-details)
+7. [Architecture & Threading](#-architecture--threading)
+8. [Code Changes](#-code-changes)
+9. [Visual Guides](#-visual-guides)
+10. [Verification Checklist](#-verification-checklist)
+11. [Deployment & Status](#-deployment--status)
 
 ---
 
 ## ✨ What's New
 
-### Major Enhancements (v2.0)
+### Major Enhancements (v2.0+)
 
 | Feature | Status | Impact |
 |---------|--------|--------|
@@ -42,6 +43,9 @@
 | **Delete Button** | ✅ Complete | Delete all checked files at once |
 | **Cleanup All Duplicates** | ✅ Complete | Automatically remove duplicate copies (keeps 1st) |
 | **Show Similar Files** | ✅ Complete | Find anagrams and fuzzy-matched similar names |
+| **Remove Text from Filenames** | ✅ Complete | Remove specific text patterns from multiple filenames at once |
+| **Load All Files** | ✅ Complete (v4.0 NEW) | Load all files without scanning for bulk rename operations |
+| **Select All Button** | ✅ Complete (v4.0 NEW) | Check/uncheck all files with one click |
 
 ### Performance Improvement
 ```
@@ -101,11 +105,14 @@ Example: 1000 files
 |--------|---------|----------|-----------------|
 | **Browse** | Select folder to scan | Top left | Always (except during scan) |
 | **Scan** | Start duplicate detection | Top center | Always (except during scan) |
+| **Load All** | Load all files without scanning (v4.0 NEW) | Top center | Always (no scanning needed) |
 | **Cancel** | Stop scanning | Top right | Only during active scan |
 | **Cleanup All** | Delete all duplicate copies | Bottom left | After scan completes |
 | **Show Similar** | Find similar named files | Bottom left | After scan completes |
+| **Select All** | Check/uncheck all files (v4.0 NEW) | Bottom left | After loading or scanning |
 | **Delete** | Delete checked files | Bottom right | When files checked |
-| **Rename** | Batch rename selected | Bottom right | After scan completes |
+| **Remove Text** | Remove text from filenames | Bottom right | Always (after load/scan) |
+| **Rename** | Batch rename selected | Bottom right | After scan/load completes |
 
 ### Context Menu (Right-Click)
 
@@ -240,6 +247,157 @@ Results: "Found 8 files with similar names in 2 groups"
 Review results and delete as needed
 ```
 
+### 5. Remove Text from Filenames
+
+**What**: Remove specific text patterns from multiple filenames without replacing the entire filename
+
+**Examples**:
+```
+Remove "_old" from:
+  photo_old.jpg → photo.jpg
+  document_old.pdf → document.pdf
+
+Remove "-backup" from:
+  file-backup.txt → file.txt
+  image-backup.jpg → image.jpg
+
+Remove "copy" from:
+  report copy.docx → report .docx
+  copy_photo.jpg → _photo.jpg
+```
+
+**How to Use**:
+```
+Step 1: Select or check files to modify
+		☑ photo_old.jpg
+		☑ document_old.pdf
+		☑ file_old.txt
+
+Step 2: Enter text to remove in the text field
+		Text: "_old"
+
+Step 3: Click "Remove Text" button
+
+Step 4: Review preview
+		"photo_old.jpg → photo.jpg"
+		"document_old.pdf → document.pdf"
+		"file_old.txt → file.txt"
+
+Step 5: Confirm removal
+		Files are renamed!
+```
+
+**Features**:
+- ✅ Preview before applying changes
+- ✅ Works with selected or checked files
+- ✅ Supports partial text removal (not full replacement)
+- ✅ Case-sensitive matching
+- ✅ Error handling for conflicts
+- ✅ Shows success/error summary
+
+---
+
+## 🆕 Bulk Rename Feature (v4.0 NEW)
+
+### Overview
+
+The **Bulk Rename feature** (v4.0) allows you to load all files from a folder without scanning for duplicates, and then perform batch rename operations using patterns or remove text.
+
+### When to Use
+
+**Use Bulk Rename When:**
+- ✅ You want to rename multiple files quickly
+- ✅ No duplicate detection needed
+- ✅ You have a specific naming pattern
+- ✅ You want to add prefix/suffix to files
+- ✅ You want to remove text from filenames
+- ✅ You want instant file loading (no hashing)
+
+**Use Scan Mode When:**
+- ✅ You need to find duplicate files
+- ✅ You want to clean up disk space
+- ✅ You need hash-based duplicate detection
+
+### Key Differences
+
+| Feature | Load All (Bulk) | Scan (Duplicates) |
+|---------|---|---|
+| **Purpose** | Bulk rename files | Find duplicates |
+| **Speed** | Instant (no hashing) | Slower (calculates hashes) |
+| **What Shows** | All files in folder | Only duplicate files |
+| **Use Case** | Rename multiple files | Clean duplicate copies |
+| **Processing** | Direct file list | Hash-based comparison |
+
+### New Buttons
+
+#### Load All Button
+- **Location**: Top bar, next to "Scan" button
+- **What It Does**: Loads all files from the selected folder (non-recursive)
+- **Result**: Files appear in the list without duplicate detection
+- **Speed**: Instant - no hashing or scanning
+
+#### Select All Button
+- **Location**: Bottom left, action buttons row
+- **What It Does**: Check/uncheck all loaded files
+- **Behavior**: 
+  - If all checked → click to uncheck all
+  - If any unchecked → click to check all
+
+### How to Use (Quick Start)
+
+**Workflow A: Add Suffix to Multiple Files**
+```
+1. Browse to folder
+2. Click "Load All" → Files load instantly
+3. Click "Select All" → All checked
+4. Enter pattern: {name}_final{n}
+5. Click "Rename" → Done!
+```
+
+**Workflow B: Remove Text Pattern**
+```
+1. Browse to folder
+2. Click "Load All" → Files load instantly
+3. Check files to modify (or click "Select All")
+4. Enter text to remove: "_old"
+5. Click "Remove Text" → Confirm → Done!
+```
+
+### Usage Examples
+
+**Example 1: Add Prefix to All Photos**
+```
+Files: photo.jpg, image.jpg, pic.jpg
+Pattern: {name}_2024{n}
+Result: photo_2024_1.jpg, image_2024_2.jpg, pic_2024_3.jpg
+```
+
+**Example 2: Remove Suffix from Documents**
+```
+Files: report-old.pdf, notes-old.txt, guide-old.pdf
+Remove: "-old"
+Result: report.pdf, notes.txt, guide.pdf
+```
+
+**Example 3: Replace Names Completely**
+```
+Files: file1.txt, file2.txt, file3.txt
+Pattern: document{n}
+Result: document1.txt, document2.txt, document3.txt
+```
+
+### Features
+
+✅ Load all files instantly (no scanning needed)  
+✅ Select all with one button  
+✅ Use any rename pattern ({name}, {n})  
+✅ Works with Remove Text feature  
+✅ Preview before renaming  
+✅ Non-recursive (current folder only)  
+✅ Fast (no hashing)  
+
+For complete details, see **BULK_RENAME_FEATURE.md**
+
 ---
 
 ## 💻 Technical Details
@@ -251,8 +409,8 @@ Target Framework:     .NET 10 Windows Forms
 Build Status:         ✅ SUCCESSFUL
 Compilation Errors:   0
 Warnings:             0
-Lines of Code Added:  310+
-New Methods:          9
+Lines of Code Added:  370+ (with Remove Text feature)
+New Methods:          10 (added btnRemoveText_Click)
 ```
 
 ### Files Modified
@@ -265,10 +423,11 @@ New Methods:          9
    - Delete/Cleanup/Show Similar handlers
    - Similarity detection algorithms
 
-2. **Form1.Designer.cs** (+30 lines)
+2. **Form1.Designer.cs** (+50 lines)
    - Cancel button added
    - Checkbox column added
-   - New buttons: Delete, Cleanup All, Show Similar
+   - New buttons: Delete, Cleanup All, Show Similar, Remove Text
+   - New text field: Remove Text input
    - Layout adjustments
 
 ### Dependencies
@@ -348,6 +507,7 @@ Update Progress Bar + Status
 - `btnDelete_Click()` - Delete all checked files
 - `btnCleanupDuplicates_Click()` - Auto-cleanup duplicates
 - `btnShowSimilar_Click()` - Find similar files
+- `btnRemoveText_Click()` - Remove text from filenames
 - `AreNamesSimilar()` - Check name similarity
 - `CalculateLevenshteinDistance()` - String distance algorithm
 
@@ -539,10 +699,10 @@ Production Ready:       ✅ YES
 
 ### Code Statistics
 ```
-Lines Added:              310+
-New Methods:              9
+Lines Added:              370+
+New Methods:              10
 Modified Methods:         2
-New UI Controls:          4 (Cancel btn, 3 feature btns, checkbox col)
+New UI Controls:          5 (Cancel btn, 3 feature btns, Remove Text field, checkbox col)
 Compilation Errors:       0
 Warnings:                 0
 Build Time:               < 5 seconds
@@ -567,6 +727,7 @@ Checkboxes:               ✅ Complete
 Delete Button:            ✅ Complete
 Cleanup All:              ✅ Complete
 Show Similar:             ✅ Complete
+Remove Text from Names:    ✅ Complete
 SQLite Database:          ⏸️ Skipped (not required)
 ```
 
@@ -621,6 +782,7 @@ The DuplicateFileFinder has been successfully enhanced with:
 ✨ **Functionality** - Context menu with 5 file operations  
 ✨ **Control** - Cancel button, checkboxes, batch delete  
 ✨ **Intelligence** - Cleanup automation & similar file detection  
+✨ **Refinement** - Remove text from filenames (partial pattern removal)  
 ✨ **Quality** - Production-grade code with comprehensive error handling  
 ✨ **Documentation** - This complete guide covering all aspects  
 

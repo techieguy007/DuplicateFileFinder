@@ -25,6 +25,11 @@
         private System.Windows.Forms.ColumnHeader colPath;
         private System.Windows.Forms.ColumnHeader colSize;
         private System.Windows.Forms.ColumnHeader colHash;
+        private System.Windows.Forms.Button btnRemoveText;
+        private System.Windows.Forms.TextBox txtRemoveText;
+        private System.Windows.Forms.Label lblRemoveText;
+        private System.Windows.Forms.Button btnLoadAll;
+        private System.Windows.Forms.Button btnSelectAll;
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -66,6 +71,11 @@
             chkPreview = new CheckBox();
             progressBar = new ProgressBar();
             lblStatus = new Label();
+            btnRemoveText = new Button();
+            txtRemoveText = new TextBox();
+            lblRemoveText = new Label();
+            btnLoadAll = new Button();
+            btnSelectAll = new Button();
             SuspendLayout();
             // 
             // txtFolder
@@ -73,13 +83,13 @@
             txtFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtFolder.Location = new Point(12, 12);
             txtFolder.Name = "txtFolder";
-            txtFolder.Size = new Size(547, 31);
+            txtFolder.Size = new Size(799, 31);
             txtFolder.TabIndex = 0;
             // 
             // btnBrowse
             // 
             btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnBrowse.Location = new Point(565, 11);
+            btnBrowse.Location = new Point(817, 11);
             btnBrowse.Name = "btnBrowse";
             btnBrowse.Size = new Size(97, 32);
             btnBrowse.TabIndex = 1;
@@ -90,7 +100,7 @@
             // btnScan
             // 
             btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnScan.Location = new Point(668, 11);
+            btnScan.Location = new Point(923, 11);
             btnScan.Name = "btnScan";
             btnScan.Size = new Size(75, 32);
             btnScan.TabIndex = 2;
@@ -102,7 +112,7 @@
             // 
             btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCancel.Enabled = false;
-            btnCancel.Location = new Point(749, 11);
+            btnCancel.Location = new Point(1085, 11);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 32);
             btnCancel.TabIndex = 3;
@@ -115,9 +125,9 @@
             lvFiles.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvFiles.Columns.AddRange(new ColumnHeader[] { colSelect, colName, colPath, colSize, colHash });
             lvFiles.FullRowSelect = true;
-            lvFiles.Location = new Point(12, 53);
+            lvFiles.Location = new Point(6, 79);
             lvFiles.Name = "lvFiles";
-            lvFiles.Size = new Size(818, 320);
+            lvFiles.Size = new Size(1154, 491);
             lvFiles.TabIndex = 4;
             lvFiles.UseCompatibleStateImageBehavior = false;
             lvFiles.View = View.Details;
@@ -151,7 +161,7 @@
             // btnRename
             // 
             btnRename.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnRename.Location = new Point(716, 496);
+            btnRename.Location = new Point(1069, 660);
             btnRename.Name = "btnRename";
             btnRename.Size = new Size(91, 38);
             btnRename.TabIndex = 5;
@@ -162,7 +172,7 @@
             // btnDelete
             // 
             btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDelete.Location = new Point(628, 496);
+            btnDelete.Location = new Point(964, 663);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(83, 38);
             btnDelete.TabIndex = 11;
@@ -173,7 +183,7 @@
             // btnCleanupDuplicates
             // 
             btnCleanupDuplicates.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnCleanupDuplicates.Location = new Point(12, 496);
+            btnCleanupDuplicates.Location = new Point(14, 711);
             btnCleanupDuplicates.Name = "btnCleanupDuplicates";
             btnCleanupDuplicates.Size = new Size(135, 38);
             btnCleanupDuplicates.TabIndex = 12;
@@ -184,7 +194,7 @@
             // btnShowSimilar
             // 
             btnShowSimilar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnShowSimilar.Location = new Point(153, 496);
+            btnShowSimilar.Location = new Point(155, 711);
             btnShowSimilar.Name = "btnShowSimilar";
             btnShowSimilar.Size = new Size(135, 38);
             btnShowSimilar.TabIndex = 13;
@@ -195,9 +205,9 @@
             // txtPattern
             // 
             txtPattern.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            txtPattern.Location = new Point(86, 407);
+            txtPattern.Location = new Point(197, 623);
             txtPattern.Name = "txtPattern";
-            txtPattern.Size = new Size(465, 31);
+            txtPattern.Size = new Size(801, 31);
             txtPattern.TabIndex = 6;
             txtPattern.Text = "{name}_dup{n}";
             // 
@@ -205,7 +215,7 @@
             // 
             lblPattern.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             lblPattern.AutoSize = true;
-            lblPattern.Location = new Point(12, 410);
+            lblPattern.Location = new Point(14, 626);
             lblPattern.Name = "lblPattern";
             lblPattern.Size = new Size(137, 25);
             lblPattern.TabIndex = 7;
@@ -215,7 +225,7 @@
             // 
             chkPreview.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             chkPreview.AutoSize = true;
-            chkPreview.Location = new Point(557, 410);
+            chkPreview.Location = new Point(884, 622);
             chkPreview.Name = "chkPreview";
             chkPreview.Size = new Size(98, 29);
             chkPreview.TabIndex = 8;
@@ -225,26 +235,83 @@
             // progressBar
             // 
             progressBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            progressBar.Location = new Point(12, 377);
+            progressBar.Location = new Point(12, 593);
             progressBar.Name = "progressBar";
-            progressBar.Size = new Size(818, 23);
+            progressBar.Size = new Size(1154, 23);
             progressBar.TabIndex = 9;
             // 
             // lblStatus
             // 
             lblStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             lblStatus.AutoSize = true;
-            lblStatus.Location = new Point(12, 354);
+            lblStatus.Location = new Point(12, 525);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(60, 25);
             lblStatus.TabIndex = 10;
             lblStatus.Text = "Ready";
             // 
+            // btnRemoveText
+            // 
+            btnRemoveText.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnRemoveText.Location = new Point(1046, 711);
+            btnRemoveText.Name = "btnRemoveText";
+            btnRemoveText.Size = new Size(114, 38);
+            btnRemoveText.TabIndex = 14;
+            btnRemoveText.Text = "Remove Text";
+            btnRemoveText.UseVisualStyleBackColor = true;
+            btnRemoveText.Click += btnRemoveText_Click;
+            // 
+            // txtRemoveText
+            // 
+            txtRemoveText.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            txtRemoveText.Location = new Point(262, 667);
+            txtRemoveText.Name = "txtRemoveText";
+            txtRemoveText.PlaceholderText = "e.g., _old, -backup, copy";
+            txtRemoveText.Size = new Size(696, 31);
+            txtRemoveText.TabIndex = 15;
+            // 
+            // lblRemoveText
+            // 
+            lblRemoveText.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            lblRemoveText.AutoSize = true;
+            lblRemoveText.Location = new Point(14, 667);
+            lblRemoveText.Name = "lblRemoveText";
+            lblRemoveText.Size = new Size(245, 25);
+            lblRemoveText.TabIndex = 16;
+            lblRemoveText.Text = "Text to remove from filename";
+            // 
+            // btnLoadAll
+            // 
+            btnLoadAll.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnLoadAll.Location = new Point(1004, 12);
+            btnLoadAll.Name = "btnLoadAll";
+            btnLoadAll.Size = new Size(75, 32);
+            btnLoadAll.TabIndex = 17;
+            btnLoadAll.Text = "Load All";
+            btnLoadAll.UseVisualStyleBackColor = true;
+            btnLoadAll.Click += btnLoadAll_Click;
+            // 
+            // btnSelectAll
+            // 
+            btnSelectAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSelectAll.Location = new Point(296, 711);
+            btnSelectAll.Name = "btnSelectAll";
+            btnSelectAll.Size = new Size(113, 38);
+            btnSelectAll.TabIndex = 18;
+            btnSelectAll.Text = "Select All";
+            btnSelectAll.UseVisualStyleBackColor = true;
+            btnSelectAll.Click += btnSelectAll_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(842, 549);
+            ClientSize = new Size(1178, 771);
+            Controls.Add(btnSelectAll);
+            Controls.Add(btnLoadAll);
+            Controls.Add(btnRemoveText);
+            Controls.Add(txtRemoveText);
+            Controls.Add(lblRemoveText);
             Controls.Add(btnShowSimilar);
             Controls.Add(btnCleanupDuplicates);
             Controls.Add(btnDelete);
@@ -268,3 +335,4 @@
         #endregion
     }
 }
+

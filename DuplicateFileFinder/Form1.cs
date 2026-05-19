@@ -660,6 +660,197 @@ namespace DuplicateFileFinder
 
             return d[len1, len2];
         }
+
+        private void btnRemoveText_Click(object? sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtRemoveText.Text))
+            {
+                MessageBox.Show("Please enter text to remove from filenames.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var textToRemove = txtRemoveText.Text.Trim();
+            var selectedItems = new List<ListViewItem>();
+
+            // Get selected items or use checked items
+            if (lvFiles.SelectedItems.Count > 0)
+            {
+                selectedItems.AddRange(lvFiles.SelectedItems.Cast<ListViewItem>());
+            }
+            else
+            {
+                selectedItems.AddRange(lvFiles.CheckedItems.Cast<ListViewItem>());
+            }
+
+            if (selectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select or check files to remove text from.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var preview = new List<string>();
+            foreach (var item in selectedItems)
+            {
+                var path = item.Tag as string;
+                if (path == null || !File.Exists(path)) continue;
+
+                var fi = new FileInfo(path);
+                var newName = fi.Name.Replace(textToRemove, "");
+                preview.Add($"{fi.Name} → {newName}");
+            }
+
+            // Show preview
+            if (preview.Count > 0)
+            {
+                var previewText = string.Join(Environment.NewLine, preview);
+                var result = MessageBox.Show(
+                    $"The following {preview.Count} file(s) will be renamed:\n\n{previewText}\n\nContinue?",
+                    "Preview - Remove Text",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result != DialogResult.Yes) return;
+            }
+
+            // Perform the actual rename
+            int successCount = 0;
+            var errors = new List<string>();
+
+            foreach (var item in selectedItems)
+            {
+                var path = item.Tag as string;
+                if (path == null || !File.Exists(path)) continue;
+
+                try
+                {
+                    var fi = new FileInfo(path);
+                    var newName = fi.Name.Replace(textToRemove, "");
+
+                    if (newName == fi.Name)
+                    {
+                        continue; // No change needed
+                    }
+
+                    var newPath = Path.Combine(Path.GetDirectoryName(path)!, newName);
+
+                    // Check if target file already exists
+                    if (File.Exists(newPath))
+                    {
+                        errors.Add($"{fi.Name}: Target filename already exists");
+                        continue;
+                    }
+
+                    File.Move(path, newPath);
+
+                    // Update ListView
+                    item.SubItems[1].Text = newName;  // File Name column
+                    item.SubItems[2].Text = newPath;  // Path column
+                    item.Tag = newPath;
+
+                    successCount++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"{Path.GetFileName(path)}: {ex.Message}");
+                }
+            }
+
+            // Show results
+            var resultMsg = $"Successfully removed text from {successCount} file(s).";
+            if (errors.Count > 0)
+            {
+                resultMsg += $"\n\nErrors ({errors.Count}):\n" + string.Join("\n", errors.Take(5));
+                if (errors.Count > 5)
+                    resultMsg += $"\n... and {errors.Count - 5} more";
+            }
+
+            MessageBox.Show(resultMsg, "Remove Text - Results", MessageBoxButtons.OK,
+                errors.Count > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+
+            lblStatus.Text = $"Removed text from {successCount} file(s).";
+        }
+
+        private void btnLoadAll_Click(object? sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtFolder.Text))
+            {
+                MessageBox.Show("Please select a folder first.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var folderPath = txtFolder.Text;
+            if (!Directory.Exists(folderPath))
+            {
+                MessageBox.Show("Folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                lvFiles.Items.Clear();
+                progressBar.Value = 0;
+                lblStatus.Text = "Loading files...";
+                Application.DoEvents();
+
+                var files = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+                int totalFiles = files.Length;
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    try
+                    {
+                        var fi = new FileInfo(files[i]);
+                        var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, fi.Length.ToString(), "" });
+                        item.Tag = files[i];
+                        lvFiles.Items.Add(item);
+
+                        // Update progress
+                        int percentage = (int)((i + 1) * 100 / totalFiles);
+                        progressBar.Value = percentage;
+                        lblStatus.Text = $"Loading: {i + 1}/{totalFiles} files";
+                        Application.DoEvents();
+                    }
+                    catch { }
+                }
+
+                progressBar.Value = 100;
+                lblStatus.Text = $"Loaded {lvFiles.Items.Count} files from '{Path.GetFileName(folderPath)}'";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading files: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblStatus.Text = "Error loading files.";
+            }
+        }
+
+        private void btnSelectAll_Click(object? sender, EventArgs e)
+        {
+            if (lvFiles.Items.Count == 0)
+            {
+                MessageBox.Show("No files loaded.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            bool allChecked = lvFiles.Items.Cast<ListViewItem>().All(item => item.Checked);
+
+            if (allChecked)
+            {
+                // Uncheck all
+                foreach (ListViewItem item in lvFiles.Items)
+                {
+                    item.Checked = false;
+                }
+                lblStatus.Text = "All files unchecked.";
+            }
+            else
+            {
+                // Check all
+                foreach (ListViewItem item in lvFiles.Items)
+                {
+                    item.Checked = true;
+                }
+                lblStatus.Text = $"All {lvFiles.Items.Count} files checked.";
+            }
+        }
     }
 }
-
