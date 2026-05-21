@@ -415,8 +415,12 @@ namespace DuplicateFileFinder
 
         private void lvFiles_ItemChecked(object? sender, ItemCheckedEventArgs e)
         {
-            // Update checkbox state when item is checked/unchecked
-            // This event fires automatically when user checks/unchecks items
+            // When checkbox is checked/unchecked, also select/highlight the item
+            // This provides visual feedback and makes the item visible in the list
+            if (e.Item != null)
+            {
+                e.Item.Selected = e.Item.Checked;
+            }
         }
 
         private void btnDelete_Click(object? sender, EventArgs e)

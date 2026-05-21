@@ -39,7 +39,7 @@
 | **Multi-Threading Support** | ✅ Complete | 4-8x faster scanning using all CPU cores |
 | **Context Menu (Right-Click)** | ✅ Complete | 5 integrated file operations (Open, Delete, Rename, etc.) |
 | **Cancel Button** | ✅ Complete | Graceful scan cancellation anytime |
-| **Checkboxes for File Selection** | ✅ Complete | Select multiple files easily |
+| **Checkboxes for File Selection** | ✅ Complete | Select multiple files easily - now highlights items when checked! |
 | **Delete Button** | ✅ Complete | Delete all checked files at once |
 | **Cleanup All Duplicates** | ✅ Complete | Automatically remove duplicate copies (keeps 1st) |
 | **Show Similar Files** | ✅ Complete | Find anagrams and fuzzy-matched similar names |
