@@ -30,6 +30,8 @@
         private System.Windows.Forms.Label lblRemoveText;
         private System.Windows.Forms.Button btnLoadAll;
         private System.Windows.Forms.Button btnSelectAll;
+        private System.Windows.Forms.CheckBox chkRecursive;
+        private System.Windows.Forms.Button btnSuggestBySize;
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -76,6 +78,8 @@
             lblRemoveText = new Label();
             btnLoadAll = new Button();
             btnSelectAll = new Button();
+            chkRecursive = new CheckBox();
+            btnSuggestBySize = new Button();
             SuspendLayout();
             // 
             // txtFolder
@@ -296,17 +300,43 @@
             btnSelectAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnSelectAll.Location = new Point(296, 711);
             btnSelectAll.Name = "btnSelectAll";
-            btnSelectAll.Size = new Size(113, 38);
+            btnSelectAll.Size = new Size(134, 38);
             btnSelectAll.TabIndex = 18;
             btnSelectAll.Text = "Select All";
             btnSelectAll.UseVisualStyleBackColor = true;
             btnSelectAll.Click += btnSelectAll_Click;
+            // 
+            // chkRecursive
+            // 
+            chkRecursive.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkRecursive.AutoSize = true;
+            chkRecursive.Checked = true;
+            chkRecursive.CheckState = CheckState.Checked;
+            chkRecursive.Location = new Point(987, 47);
+            chkRecursive.Name = "chkRecursive";
+            chkRecursive.Size = new Size(181, 29);
+            chkRecursive.TabIndex = 19;
+            chkRecursive.Text = "Search Recursively";
+            chkRecursive.UseVisualStyleBackColor = true;
+            // 
+            // btnSuggestBySize
+            // 
+            btnSuggestBySize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSuggestBySize.Location = new Point(436, 711);
+            btnSuggestBySize.Name = "btnSuggestBySize";
+            btnSuggestBySize.Size = new Size(151, 38);
+            btnSuggestBySize.TabIndex = 20;
+            btnSuggestBySize.Text = "Suggest by Size";
+            btnSuggestBySize.UseVisualStyleBackColor = true;
+            btnSuggestBySize.Click += btnSuggestBySize_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1178, 771);
+            Controls.Add(btnSuggestBySize);
+            Controls.Add(chkRecursive);
             Controls.Add(btnSelectAll);
             Controls.Add(btnLoadAll);
             Controls.Add(btnRemoveText);

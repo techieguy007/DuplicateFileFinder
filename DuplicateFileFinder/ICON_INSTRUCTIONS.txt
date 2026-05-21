@@ -1,0 +1,22 @@
+<!-- DuplicateFileFinder Icon - PNG Version -->
+<!-- This is the SVG that should be converted to PNG and then to ICO format -->
+<!-- The SVG contains a blue gradient background with overlapping file icons and a magnifying glass -->
+<!-- Colors: Blue gradient (#2563EB to #4338CA), white foreground, amber magnifying glass (#F59E0B) -->
+
+The SVG icon has been created with the following design:
+- Blue gradient background (rounded rectangle)
+- Two overlapping file icons (representing duplicates)
+- Amber magnifying glass with handle (representing search/detection)
+- Professional drop shadow effect
+- Suitable for 512x512 application icon
+
+To use this icon:
+1. Open the SVG file in an image editor (like Inkscape, Adobe Illustrator, or online tools)
+2. Export as PNG at 256x256 pixels
+3. Use a tool like ImageMagick or IcoFX to convert PNG to ICO format
+4. Place the .ico file in the project resources
+5. Set it as the form icon in Visual Studio properties
+
+Or use an online SVG-to-ICO converter:
+- https://convertio.co/svg-ico/
+- https://icoconvert.com/

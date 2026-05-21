@@ -16,6 +16,75 @@ namespace DuplicateFileFinder
             InitializeContextMenu();
             // Enable checkboxes in ListView
             lvFiles.CheckBoxes = true;
+            // Load and set the application icon
+            LoadApplicationIcon();
+        }
+
+        private void LoadApplicationIcon()
+        {
+            try
+            {
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string icoPath = Path.Combine(appDir, "app.ico");
+
+                if (File.Exists(icoPath))
+                {
+                    try
+                    {
+                        this.Icon = new Icon(icoPath);
+                        System.Diagnostics.Debug.WriteLine("✓ Icon loaded from app.ico");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to load app.ico: {ex.Message}");
+                    }
+                }
+
+                // Fallback if app.ico not found
+                this.Icon = SystemIcons.Application;
+                System.Diagnostics.Debug.WriteLine("Using system application icon as fallback");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Icon load error: {ex.Message}");
+                try
+                {
+                    this.Icon = SystemIcons.Application;
+                }
+                catch { /* Silent fail */ }
+            }
+        }
+
+        private Icon CreatePlaceholderIcon()
+        {
+            // Create a simple blue square icon as placeholder
+            // This demonstrates the icon loading mechanism
+            Bitmap bitmap = new Bitmap(32, 32);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // Blue gradient background
+                using (var brush = new SolidBrush(Color.FromArgb(37, 99, 235))) // #2563EB
+                {
+                    g.FillRectangle(brush, 0, 0, 32, 32);
+                }
+
+                // White circle in center (representing file/duplicate concept)
+                using (var brush = new SolidBrush(Color.White))
+                {
+                    g.FillEllipse(brush, 8, 8, 16, 16);
+                }
+
+                // Orange circle (representing magnifying glass)
+                using (var pen = new Pen(Color.FromArgb(245, 158, 11), 2)) // #F59E0B
+                {
+                    g.DrawEllipse(pen, 10, 10, 12, 12);
+                }
+            }
+
+            IntPtr hIcon = bitmap.GetHicon();
+            Icon icon = Icon.FromHandle(hIcon);
+            return icon;
         }
 
         private void InitializeContextMenu()
@@ -226,7 +295,7 @@ namespace DuplicateFileFinder
             {
                 // Run on thread pool to avoid blocking UI
                 var results = await Task.Run(
-                    () => ScanFolderMultiThreaded(folder, cancellationToken),
+                    () => ScanFolderMultiThreaded(folder, chkRecursive.Checked, cancellationToken),
                     cancellationToken
                 );
 
@@ -257,9 +326,10 @@ namespace DuplicateFileFinder
             }
         }
 
-        private Dictionary<string, List<string>> ScanFolderMultiThreaded(string folder, CancellationToken cancellationToken)
+        private Dictionary<string, List<string>> ScanFolderMultiThreaded(string folder, bool recursive, CancellationToken cancellationToken)
         {
-            var files = Directory.GetFiles(folder, "*", SearchOption.AllDirectories);
+            var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var files = Directory.GetFiles(folder, "*", searchOption);
             var total = files.Length;
             var dict = new Dictionary<string, List<string>>();
             var lockObj = new object();
@@ -352,6 +422,61 @@ namespace DuplicateFileFinder
             {
                 return string.Empty;
             }
+        }
+
+        private Dictionary<long, List<string>> FindDuplicatesBySize(string folder, bool recursive)
+        {
+            try
+            {
+                var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                var files = Directory.GetFiles(folder, "*", searchOption);
+                var dict = new Dictionary<long, List<string>>();
+
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        var fi = new FileInfo(file);
+                        if (!dict.TryGetValue(fi.Length, out var list))
+                        {
+                            list = new List<string>();
+                            dict[fi.Length] = list;
+                        }
+                        list.Add(file);
+                    }
+                    catch { }
+                }
+
+                return dict;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error scanning folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return new Dictionary<long, List<string>>();
+            }
+        }
+
+        private void DisplaySizeSuggestions(Dictionary<long, List<string>> results)
+        {
+            lvFiles.Items.Clear();
+            int totalDuplicates = 0;
+
+            foreach (var kv in results.Where(kv => kv.Value.Count > 1))
+            {
+                foreach (var path in kv.Value)
+                {
+                    var fi = new FileInfo(path);
+                    var sizeKB = (fi.Length / 1024.0).ToString("F2");
+                    var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, fi.Length.ToString(), sizeKB + " KB" });
+                    item.Tag = path;
+                    lvFiles.Items.Add(item);
+                    totalDuplicates++;
+                }
+            }
+
+            int identicalSizeGroups = results.Count(kv => kv.Value.Count > 1);
+            lblStatus.Text = $"Found {totalDuplicates} files in {identicalSizeGroups} size groups (identical by size). Verify manually for actual duplicates.";
+            progressBar.Value = 100;
         }
 
         private void btnRename_Click(object? sender, EventArgs e)
@@ -796,7 +921,8 @@ namespace DuplicateFileFinder
                 lblStatus.Text = "Loading files...";
                 Application.DoEvents();
 
-                var files = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+                var searchOption = chkRecursive.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                var files = Directory.GetFiles(folderPath, "*.*", searchOption);
                 int totalFiles = files.Length;
 
                 for (int i = 0; i < files.Length; i++)
@@ -854,6 +980,53 @@ namespace DuplicateFileFinder
                     item.Checked = true;
                 }
                 lblStatus.Text = $"All {lvFiles.Items.Count} files checked.";
+            }
+        }
+
+        private void btnSuggestBySize_Click(object? sender, EventArgs e)
+        {
+            var folder = txtFolder.Text;
+            if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+            {
+                MessageBox.Show("Please select a valid folder.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            btnSuggestBySize.Enabled = false;
+            progressBar.Value = 0;
+            lblStatus.Text = "Scanning for files with identical sizes...";
+            Application.DoEvents();
+
+            try
+            {
+                _scanStopwatch = Stopwatch.StartNew();
+
+                // Find files with identical sizes
+                var results = FindDuplicatesBySize(folder, chkRecursive.Checked);
+
+                _scanStopwatch.Stop();
+
+                if (results.Count == 0)
+                {
+                    MessageBox.Show("No files found.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblStatus.Text = "Ready";
+                    return;
+                }
+
+                // Display suggestions
+                DisplaySizeSuggestions(results);
+
+                int suggestions = results.Count(kv => kv.Value.Count > 1);
+                lblStatus.Text += $" Completed in {_scanStopwatch?.Elapsed.TotalSeconds:F2} seconds.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblStatus.Text = "Error scanning files.";
+            }
+            finally
+            {
+                btnSuggestBySize.Enabled = true;
             }
         }
     }
