@@ -32,6 +32,7 @@
         private System.Windows.Forms.Button btnSelectAll;
         private System.Windows.Forms.CheckBox chkRecursive;
         private System.Windows.Forms.Button btnSuggestBySize;
+        private System.Windows.Forms.CheckBox chkSkipSystemFiles;
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -80,6 +81,7 @@
             btnSelectAll = new Button();
             chkRecursive = new CheckBox();
             btnSuggestBySize = new Button();
+            chkSkipSystemFiles = new CheckBox();
             SuspendLayout();
             // 
             // txtFolder
@@ -330,11 +332,25 @@
             btnSuggestBySize.UseVisualStyleBackColor = true;
             btnSuggestBySize.Click += btnSuggestBySize_Click;
             // 
+            // chkSkipSystemFiles
+            // 
+            chkSkipSystemFiles.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkSkipSystemFiles.AutoSize = true;
+            chkSkipSystemFiles.Checked = true;
+            chkSkipSystemFiles.CheckState = CheckState.Checked;
+            chkSkipSystemFiles.Location = new Point(795, 49);
+            chkSkipSystemFiles.Name = "chkSkipSystemFiles";
+            chkSkipSystemFiles.Size = new Size(173, 29);
+            chkSkipSystemFiles.TabIndex = 21;
+            chkSkipSystemFiles.Text = "Skip System Files";
+            chkSkipSystemFiles.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1178, 771);
+            Controls.Add(chkSkipSystemFiles);
             Controls.Add(btnSuggestBySize);
             Controls.Add(chkRecursive);
             Controls.Add(btnSelectAll);

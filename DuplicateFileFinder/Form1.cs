@@ -334,12 +334,17 @@ namespace DuplicateFileFinder
             var dict = new Dictionary<string, List<string>>();
             var lockObj = new object();
             int processed = 0;
+            int lastUIUpdate = 0;
+            string currentFile = "";
+            const int UI_UPDATE_INTERVAL = 50; // Update UI more frequently to show file name
 
-            // Use Parallel.ForEach for multi-threaded processing
+            // Use reduced parallelism to prevent CPU throttling
+            int maxDegreeOfParallelism = Math.Max(1, (int)(Environment.ProcessorCount * 0.75));
+
             var parallelOptions = new ParallelOptions
             {
                 CancellationToken = cancellationToken,
-                MaxDegreeOfParallelism = Environment.ProcessorCount
+                MaxDegreeOfParallelism = maxDegreeOfParallelism
             };
 
             try
@@ -350,37 +355,67 @@ namespace DuplicateFileFinder
 
                     try
                     {
+                        // Skip system/cache files if checkbox is enabled
+                        if (ShouldSkipFile(file))
+                        {
+                            lock (lockObj)
+                            {
+                                processed++;
+                            }
+                            return;
+                        }
+
                         var fi = new FileInfo(file);
-                        var hash = ComputeHash(file);
-                        var key = $"{hash}:{fi.Length}";
 
                         lock (lockObj)
                         {
-                            if (!dict.TryGetValue(key, out var list))
-                            {
-                                list = new List<string>();
-                                dict[key] = list;
-                            }
-                            list.Add(file);
+                            currentFile = fi.FullName;
+                        }
 
-                            processed++;
-                            if (total > 0)
-                            {
-                                var percentage = Math.Min(100, processed * 100 / total);
-                                var speed = _scanStopwatch?.Elapsed.TotalSeconds > 0
-                                    ? (processed / _scanStopwatch.Elapsed.TotalSeconds).ToString("F1")
-                                    : "0";
+                        var hash = ComputeHash(file);
 
-                                // Update UI on main thread
-                                Invoke((Action)(() =>
+                        // Only add if hash was successful
+                        if (!string.IsNullOrEmpty(hash))
+                        {
+                            var key = $"{hash}:{fi.Length}";
+
+                            lock (lockObj)
+                            {
+                                if (!dict.TryGetValue(key, out var list))
                                 {
-                                    progressBar.Value = percentage;
-                                    lblStatus.Text = $"Processing: {processed}/{total} ({percentage}%) - {speed} files/sec";
-                                }));
+                                    list = new List<string>();
+                                    dict[key] = list;
+                                }
+                                list.Add(file);
                             }
                         }
                     }
-                    catch { }
+                    catch 
+                    { 
+                        // Silently skip problematic files
+                    }
+
+                    lock (lockObj)
+                    {
+                        processed++;
+
+                        // Update UI more frequently to show current file
+                        if (processed - lastUIUpdate >= UI_UPDATE_INTERVAL && total > 0)
+                        {
+                            lastUIUpdate = processed;
+                            var percentage = Math.Min(100, processed * 100 / total);
+                            var speed = _scanStopwatch?.Elapsed.TotalSeconds > 0
+                                ? (processed / _scanStopwatch.Elapsed.TotalSeconds).ToString("F1")
+                                : "0";
+
+                            // Update UI on main thread - show current file path
+                            Invoke((Action)(() =>
+                            {
+                                progressBar.Value = percentage;
+                                lblStatus.Text = $"Processing: {processed}/{total} ({percentage}%) - {speed} files/sec\nCurrent: {currentFile}";
+                            }));
+                        }
+                    }
                 });
             }
             catch (OperationCanceledException)
@@ -415,12 +450,13 @@ namespace DuplicateFileFinder
             try
             {
                 using var sha = SHA256.Create();
-                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
                 var hash = sha.ComputeHash(fs);
                 return Convert.ToHexString(hash);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Hash error for {path}: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -440,6 +476,47 @@ namespace DuplicateFileFinder
             }
 
             return $"{len:F2} {sizes[order]}";
+        }
+
+        private bool ShouldSkipFile(string filePath)
+        {
+            if (!chkSkipSystemFiles.Checked)
+                return false;
+
+            string path = filePath.ToLower();
+
+            // Skip system and cache directories
+            string[] skipDirs = 
+            {
+                "\\bin\\", "\\bin32\\", "\\bin64\\",
+                "\\obj\\", "\\debug\\", "\\release\\",
+                "\\scache\\", "\\cache\\", "\\temp\\", "\\tmp\\",
+                "\\appdata\\", "\\programdata\\", "\\windows\\",
+                "\\.git\\", "\\.vs\\", "\\node_modules\\",
+                "\\.nuget\\", "\\.cache\\"
+            };
+
+            foreach (var dir in skipDirs)
+            {
+                if (path.Contains(dir))
+                    return true;
+            }
+
+            // Skip system file extensions
+            string[] skipExtensions = 
+            {
+                ".pdb", ".obj", ".ilk", ".lib", ".exp", ".exe", ".dll",
+                ".tmp", ".bak", ".log", ".lock", ".ldf", ".mdf"
+            };
+
+            string ext = Path.GetExtension(filePath).ToLower();
+            foreach (var skipExt in skipExtensions)
+            {
+                if (ext == skipExt)
+                    return true;
+            }
+
+            return false;
         }
 
         private Dictionary<long, List<string>> FindDuplicatesBySize(string folder, bool recursive)
