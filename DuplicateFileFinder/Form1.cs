@@ -399,7 +399,8 @@ namespace DuplicateFileFinder
                 foreach (var path in kv.Value)
                 {
                     var fi = new FileInfo(path);
-                    var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, fi.Length.ToString(), kv.Key.Split(':')[0] });
+                    var sizeReadable = FormatFileSize(fi.Length);
+                    var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, sizeReadable, kv.Key.Split(':')[0] });
                     item.Tag = path;
                     lvFiles.Items.Add(item);
                 }
@@ -422,6 +423,23 @@ namespace DuplicateFileFinder
             {
                 return string.Empty;
             }
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            if (bytes <= 0) return "0 B";
+
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            double len = bytes;
+            int order = 0;
+
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                len = len / 1024;
+            }
+
+            return $"{len:F2} {sizes[order]}";
         }
 
         private Dictionary<long, List<string>> FindDuplicatesBySize(string folder, bool recursive)
@@ -466,8 +484,8 @@ namespace DuplicateFileFinder
                 foreach (var path in kv.Value)
                 {
                     var fi = new FileInfo(path);
-                    var sizeKB = (fi.Length / 1024.0).ToString("F2");
-                    var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, fi.Length.ToString(), sizeKB + " KB" });
+                    var sizeReadable = FormatFileSize(fi.Length);
+                    var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, sizeReadable, sizeReadable });
                     item.Tag = path;
                     lvFiles.Items.Add(item);
                     totalDuplicates++;
@@ -930,7 +948,8 @@ namespace DuplicateFileFinder
                     try
                     {
                         var fi = new FileInfo(files[i]);
-                        var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, fi.Length.ToString(), "" });
+                        var sizeReadable = FormatFileSize(fi.Length);
+                        var item = new ListViewItem(new[] { "", fi.Name, fi.FullName, sizeReadable, "" });
                         item.Tag = files[i];
                         lvFiles.Items.Add(item);
 
